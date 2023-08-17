@@ -3,6 +3,8 @@
 import { PromptCard } from './PromptCard';
 
 export const Profile = ({ name, desc, data, handleEdit, handleDelete }) => {
+  data = data.reverse();
+  
   return (
     <section className="w-full feed">
       <h1 className="head_text text-left text-9xl">

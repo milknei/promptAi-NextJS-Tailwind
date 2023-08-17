@@ -11,6 +11,7 @@ const MyProfile = ({ params }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -20,12 +21,15 @@ const MyProfile = ({ params }) => {
       const data = await response.json();
 
       setPosts(data);
+      setIsLoading(false);
     };
 
     const fetchPostsLoggedOut = async () => {
       const response = await fetch(`../api/users/email/${params.email}/posts`);
       const data = await response.json();
+
       setPosts(data);
+      setIsLoading(false);
     };
 
     if (session?.user.email.split('@')[0] === params.email && status === 'authenticated') {
@@ -56,7 +60,7 @@ const MyProfile = ({ params }) => {
       }
     }
   };
-  if (status === 'loading') return <Loading />;
+  if (status === 'loading' || isLoading) return <Loading />;
 
   if (session?.user.email.split('@')[0] === params.email && status === 'authenticated')
     return (

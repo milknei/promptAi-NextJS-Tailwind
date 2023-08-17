@@ -11,6 +11,7 @@ const MyProfile = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -20,6 +21,7 @@ const MyProfile = () => {
       const data = await response.json();
 
       setPosts(data);
+      setIsLoading(false);
     };
 
     if (session?.user.id && status === 'authenticated') fetchPosts();
@@ -45,7 +47,7 @@ const MyProfile = () => {
       }
     }
   };
-  if (status === 'loading') return <Loading />;
+  if (status === 'loading' || isLoading) return <Loading />;
   if (status === 'unauthenticated') return <p className="text-xl text-orange-700">You are not logged in :/</p>;
 
   return (
