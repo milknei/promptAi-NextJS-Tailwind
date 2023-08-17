@@ -6,6 +6,9 @@ import { Provider } from '@components/Provider';
 export const metadata = {
   title: 'PromptAI',
   description: 'Discover and Share AI Prompts',
+  icons: {
+    icon: '/assets/images/logo.png',
+  },
 };
 
 const RootLayout = ({ children }) => {
