@@ -4,12 +4,14 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) => {
-  const router = useRouter;
+  const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
-
+  const isCreator = session?.user.id === post.creator._id;
+  
   const [copied, setCopied] = useState('');
 
   const handleCopy = () => {
@@ -18,10 +20,14 @@ export const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) =
     setTimeout(() => setCopied(''), 3000);
   };
 
+  const handleProfileClick = () => {
+    router.push(`/profile/${post.creator.email.split('@')[0]}`);
+  };
+
   return (
     <div className="prompt_card">
       <div className="flex justify-between items-start gap-5">
-        <div className="flex flex-1 justify-start items-center gap-3 cursor-pointer">
+        <div className="flex flex-1 justify-start items-center gap-3 cursor-pointer" onClick={handleProfileClick}>
           <Image
             src={post.creator.image}
             alt="user image"
@@ -31,7 +37,12 @@ export const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) =
           />
           <div className="flex flex-col">
             <h3 className="font-satoshi font-semibold text-gray-900">{post.creator.username}</h3>
-            <p className="font-inter text-sm text-gray-500">{post.creator.email}</p>
+            <Link
+              className="font-inter text-sm text-gray-500 hover:text-blue-600"
+              href={`mailto:${post.creator.email}`}
+            >
+              {post.creator.email}
+            </Link>
           </div>
         </div>
 
@@ -53,7 +64,7 @@ export const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) =
         #{post.tag}
       </p>
 
-      {session?.user.id === post.creator._id && pathname === '/profile' && (
+      {isCreator && /^\/profile/.test(pathname) && (
         <div className="flex-between gap-4 border-t border-gray-100 mt-5 ">
           <p className="font-inter text-sm green_gradient cursor-pointer" onClick={handleEdit}>
             Edit

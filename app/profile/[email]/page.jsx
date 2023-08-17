@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Profile } from '@components/profile';
 import { Loading } from '@components/Loading';
 
-const MyProfile = () => {
+const MyProfile = ({ params }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [posts, setPosts] = useState([]);
@@ -15,14 +15,25 @@ const MyProfile = () => {
   useEffect(() => {
     if (status === 'loading') return;
 
-    const fetchPosts = async () => {
-      const response = await fetch(`api/users/id/${session?.user.id}/posts`);
+    const fetchPostsLoggedIn = async () => {
+      const response = await fetch(`../api/users/id/${session?.user.id}/posts`);
       const data = await response.json();
 
       setPosts(data);
     };
 
-    if (session?.user.id && status === 'authenticated') fetchPosts();
+    const fetchPostsLoggedOut = async () => {
+      const response = await fetch(`../api/users/email/${params.email}/posts`);
+      const data = await response.json();
+      setPosts(data);
+    };
+
+    if (session?.user.email.split('@')[0] === params.email && status === 'authenticated') {
+      fetchPostsLoggedIn();
+      return;
+    }
+
+    fetchPostsLoggedOut();
   }, [status]);
 
   const handleEdit = (post) => {
@@ -46,12 +57,22 @@ const MyProfile = () => {
     }
   };
   if (status === 'loading') return <Loading />;
-  if (status === 'unauthenticated') return <p className="text-xl text-orange-700">You are not logged in :/</p>;
+
+  if (session?.user.email.split('@')[0] === params.email && status === 'authenticated')
+    return (
+      <Profile
+        name="My"
+        desc="Welcome to your personalized profile page"
+        data={posts}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
+    );
 
   return (
     <Profile
-      name="My"
-      desc="Welcome to your personalized profile page"
+      name={`${params.email}'s`}
+      desc={`Here you can view prompts made by this user`}
       data={posts}
       handleEdit={handleEdit}
       handleDelete={handleDelete}
