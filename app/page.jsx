@@ -9,7 +9,7 @@ const Home = () => {
         <span className="orange_gradient text-center">AI-Powered Prompts</span>
       </h1>
       <p className="desc text-center">
-        PrompedAI is a website where you can find, create, and share AI prompts. It helps you explore ideas for various
+        PromptAI is a website where you can find, create, and share AI prompts. It helps you explore ideas for various
         things using the power of AI.
       </p>
 
